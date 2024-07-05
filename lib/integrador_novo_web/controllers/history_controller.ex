@@ -60,7 +60,7 @@ defmodule IntegradorNovoWeb.HistoryController do
   defp fetch_updated_history_data(id) do
     Repo.all(
       from h in History,
-      where: h.machine_id == ^id and h.status != 0,
+      where: h.machine_id == ^id,
       limit: 10,
       order_by: [desc: h.id]
     )
