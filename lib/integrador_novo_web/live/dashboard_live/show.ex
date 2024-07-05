@@ -39,6 +39,7 @@ defmodule IntegradorNovoWeb.DashboardLive.Show do
 
   def history_data(conn, %{"id" => id}) do
     history_data = fetch_updated_history_data(id)
+    IO.inspect(history_data, label: "HISTORY DATA CONTROLLER")
     json(conn, history_data)
   end
 
