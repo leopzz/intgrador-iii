@@ -42,6 +42,7 @@ defmodule IntegradorNovoWeb.HistoryController do
   end
 
   def history_data(conn, %{"id" => id}) do
+    IO.inspect(id, label: "TESTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
     case fetch_updated_history_data(id) do
       [] ->
         conn
@@ -59,7 +60,7 @@ defmodule IntegradorNovoWeb.HistoryController do
   defp fetch_updated_history_data(id) do
     Repo.all(
       from h in History,
-      where: h.machine_id == ^id and h.status == 1,
+      where: h.machine_id == ^id and h.status != 0,
       limit: 10,
       order_by: [desc: h.id]
     )

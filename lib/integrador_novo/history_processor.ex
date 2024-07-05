@@ -44,7 +44,7 @@ defmodule IntegradorNovo.HistoryProcessor do
       |> Ecto.Changeset.change(status: 1)
       |> Repo.update()
 
-      generate_alerts(history)
+      # generate_alerts(history)
 
       # PubSub.broadcast(IntegradorNovo.PubSub, @pubsub_topic, {:history_processed, history})
     rescue
