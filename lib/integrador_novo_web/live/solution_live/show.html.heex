@@ -1,0 +1,27 @@
+<.header>
+  Solution <%= @solution.id %>
+  <:subtitle>This is a solution record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/solutions/#{@solution}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit solution</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Description"><%= @solution.description %></:item>
+  <:item title="Solution"><%= @solution.solution %></:item>
+</.list>
+
+<.back navigate={~p"/solutions"}>Back to solutions</.back>
+
+<.modal :if={@live_action == :edit} id="solution-modal" show on_cancel={JS.patch(~p"/solutions/#{@solution}")}>
+  <.live_component
+    module={IntegradorNovoWeb.SolutionLive.FormComponent}
+    id={@solution.id}
+    title={@page_title}
+    action={@live_action}
+    solution={@solution}
+    patch={~p"/solutions/#{@solution}"}
+  />
+</.modal>

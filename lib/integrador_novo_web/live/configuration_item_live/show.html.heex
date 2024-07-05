@@ -1,0 +1,27 @@
+<.header>
+  Configuration item <%= @configuration_item.id %>
+  <:subtitle>This is a configuration_item record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/configuration_item/#{@configuration_item}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit configuration_item</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Description"><%= @configuration_item.description %></:item>
+  <:item title="Item type"><%= @configuration_item.item_type %></:item>
+</.list>
+
+<.back navigate={~p"/configuration_item"}>Back to configuration_item</.back>
+
+<.modal :if={@live_action == :edit} id="configuration_item-modal" show on_cancel={JS.patch(~p"/configuration_item/#{@configuration_item}")}>
+  <.live_component
+    module={IntegradorNovoWeb.ConfigurationItemLive.FormComponent}
+    id={@configuration_item.id}
+    title={@page_title}
+    action={@live_action}
+    configuration_item={@configuration_item}
+    patch={~p"/configuration_item/#{@configuration_item}"}
+  />
+</.modal>

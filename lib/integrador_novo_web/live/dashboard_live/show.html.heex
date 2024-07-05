@@ -1,0 +1,142 @@
+<.header>
+  Machine <%= @machine.id %>
+  <:subtitle>Configuration Items Dashboard</:subtitle>
+</.header>
+
+<div id="chart-container">
+  <div class="chart-container" id="chart-container-cpu_usage">
+    <canvas class="chart-canvas" id="chart-cpu_usage" width="700" height="300"></canvas>
+  </div>
+  <div class="chart-container" id="chart-container-ram_usage">
+    <canvas class="chart-canvas" id="chart-ram_usage" width="700" height="300"></canvas>
+  </div>
+  <div class="chart-container" id="chart-container-disk_usage">
+    <canvas class="chart-canvas" id="chart-disk_usage" width="700" height="300"></canvas>
+  </div>
+  <div class="chart-container" id="chart-container-swap_usage">
+    <canvas class="chart-canvas" id="chart-swap_usage" width="700" height="300"></canvas>
+  </div>
+  <div class="chart-container" id="chart-container-cpu_temperature">
+    <canvas class="chart-canvas" id="chart-cpu_temperature" width="700" height="300"></canvas>
+  </div>
+  <div class="chart-container" id="chart-container-process_count">
+    <canvas class="chart-canvas" id="chart-process_count" width="700" height="300"></canvas>
+  </div>
+  <div class="chart-container" id="chart-container-cpu_frequency">
+    <canvas class="chart-canvas" id="chart-cpu_frequency" width="700" height="300"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var charts = {
+      cpu_usage: createChart('chart-cpu_usage'),
+      ram_usage: createChart('chart-ram_usage'),
+      disk_usage: createChart('chart-disk_usage'),
+      swap_usage: createChart('chart-swap_usage'),
+      cpu_temperature: createChart('chart-cpu_temperature'),
+      process_count: createChart('chart-process_count'),
+      cpu_frequency: createChart('chart-cpu_frequency')
+    };
+
+    function createChart(chartId) {
+      var ctx = document.getElementById(chartId).getContext('2d');
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: chartId,
+            data: [],
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Index'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Value'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateChart(chart, newData) {
+      chart.data.labels = newData.map((_, index) => index + 1);
+      chart.data.datasets[0].data = newData;
+      chart.update();
+    }
+
+    function fetchHistoryData() {
+      const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+
+      fetch(`/dashboard/<%= @machine.id %>/history_data`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken
+        },
+        body: JSON.stringify({ id: <%= @machine.id %> })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Fetched new data:", data);
+        updateCharts(data.history_data);
+      })
+      .catch(error => {
+        console.error("Error fetching history data:", error);
+      });
+    }
+
+    function updateCharts(historyData) {
+      var dataCpuUsage = historyData.map(item => item.cpu_usage);
+      var dataRamUsage = historyData.map(item => item.ram_usage);
+      var dataDiskUsage = historyData.map(item => item.disk_usage);
+      var dataSwapUsage = historyData.map(item => item.swap_usage);
+      var dataCpuTemperature = historyData.map(item => item.cpu_temperature);
+      var dataProcessCount = historyData.map(item => item.process_count);
+      var dataCpuFrequency = historyData.map(item => item.cpu_frequency);
+
+      updateChart(charts.cpu_usage, dataCpuUsage);
+      updateChart(charts.ram_usage, dataRamUsage);
+      updateChart(charts.disk_usage, dataDiskUsage);
+      updateChart(charts.swap_usage, dataSwapUsage);
+      updateChart(charts.cpu_temperature, dataCpuTemperature);
+      updateChart(charts.process_count, dataProcessCount);
+      updateChart(charts.cpu_frequency, dataCpuFrequency);
+    }
+    // Initial chart rendering
+    fetchHistoryData();
+
+    // Fetch history data every 7 seconds
+    setInterval(fetchHistoryData, 7000);
+
+  });
+</script>
+
+<.back navigate={~p"/machines"}>
+  Back to machines
+</.back>
+
+<.modal :if={@live_action == :edit} id="machine-modal" show on_cancel={JS.patch(~p"/machines/#{@machine.id}")}>
+  <.live_component
+    module={IntegradorNovoWeb.MachineLive.FormComponent}
+    id={@machine.id}
+    title={@page_title}
+    action={@live_action}
+    machine={@machine}
+    patch={~p"/machines/#{@machine.id}"}
+  />
+</.modal>

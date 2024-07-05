@@ -1,0 +1,26 @@
+<.header>
+  Machine <%= @machine.id %>
+  <:subtitle>This is a machine record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/machines/#{@machine}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit machine</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Description"><%= @machine.description %></:item>
+</.list>
+
+<.back navigate={~p"/machines"}>Back to machines</.back>
+
+<.modal :if={@live_action == :edit} id="machine-modal" show on_cancel={JS.patch(~p"/machines/#{@machine}")}>
+  <.live_component
+    module={IntegradorNovoWeb.MachineLive.FormComponent}
+    id={@machine.id}
+    title={@page_title}
+    action={@live_action}
+    machine={@machine}
+    patch={~p"/machines/#{@machine}"}
+  />
+</.modal>

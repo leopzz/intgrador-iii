@@ -1,0 +1,41 @@
+<.header>
+  Listing Machines
+  <:actions>
+    <.link patch={~p"/machines/new"}>
+      <.button>New Machine</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="machines"
+  rows={@streams.machines}
+  row_click={fn {_id, machine} -> JS.navigate(~p"/machines/#{machine}") end}
+>
+  <:col :let={{_id, machine}} label="Description"><%= machine.description %></:col>
+  <:action :let={{_id, machine}}>
+    <div class="sr-only">
+      <.link navigate={~p"/machines/#{machine}"}>Show</.link>
+    </div>
+    <.link patch={~p"/machines/#{machine}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, machine}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: machine.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="machine-modal" show on_cancel={JS.patch(~p"/machines")}>
+  <.live_component
+    module={IntegradorNovoWeb.MachineLive.FormComponent}
+    id={@machine.id || :new}
+    title={@page_title}
+    action={@live_action}
+    machine={@machine}
+    patch={~p"/machines"}
+  />
+</.modal>

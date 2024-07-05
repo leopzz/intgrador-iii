@@ -1,0 +1,27 @@
+<.header>
+  Select a Machine to View
+</.header>
+
+<.table
+  id="machines"
+  rows={@streams.machines}
+  row_click={fn {_id, machine} -> JS.navigate(~p"/dashboard/#{machine}") end}
+>
+  <:col :let={{_id, machine}} label="Machine"><%= machine.description %></:col>
+  <:action :let={{_id, machine}}>
+    <div class="sr-only">
+      <.link navigate={~p"/machines/#{machine}"}>Show</.link>
+    </div>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="machine-modal" show on_cancel={JS.patch(~p"/machines")}>
+  <.live_component
+    module={IntegradorNovoWeb.MachineLive.FormComponent}
+    id={@machine.id || :new}
+    title={@page_title}
+    action={@live_action}
+    machine={@machine}
+    patch={~p"/machines"}
+  />
+</.modal>

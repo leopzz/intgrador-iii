@@ -1,0 +1,42 @@
+<.header>
+  Listing Configuration item
+  <:actions>
+    <.link patch={~p"/configuration_item/new"}>
+      <.button>New Configuration item</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="configuration_item"
+  rows={@streams.configuration_item_collection}
+  row_click={fn {_id, configuration_item} -> JS.navigate(~p"/configuration_item/#{configuration_item}") end}
+>
+  <:col :let={{_id, configuration_item}} label="Description"><%= configuration_item.description %></:col>
+  <:col :let={{_id, configuration_item}} label="Item type"><%= configuration_item.item_type %></:col>
+  <:action :let={{_id, configuration_item}}>
+    <div class="sr-only">
+      <.link navigate={~p"/configuration_item/#{configuration_item}"}>Show</.link>
+    </div>
+    <.link patch={~p"/configuration_item/#{configuration_item}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, configuration_item}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: configuration_item.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="configuration_item-modal" show on_cancel={JS.patch(~p"/configuration_item")}>
+  <.live_component
+    module={IntegradorNovoWeb.ConfigurationItemLive.FormComponent}
+    id={@configuration_item.id || :new}
+    title={@page_title}
+    action={@live_action}
+    configuration_item={@configuration_item}
+    patch={~p"/configuration_item"}
+  />
+</.modal>
