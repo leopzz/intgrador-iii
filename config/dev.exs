@@ -2,10 +2,10 @@ import Config
 
 # Configure your database
 config :integrador_novo, IntegradorNovo.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "postgres2",
+  password: "postgres2",
   hostname: "localhost",
-  database: "integrador_novo_dev",
+  database: "integrador",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
