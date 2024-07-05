@@ -17,5 +17,13 @@ config :swoosh, local: false
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :integrador_novo, IntegradorNovo.Repo,
+  username: "postgres2",
+  password: "postgres2",
+  database: "integrador",
+  hostname: "localhost",
+  pool_size: 10
+  # outras opções de configuração, se houver
+
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
